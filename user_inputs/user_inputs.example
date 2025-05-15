@@ -1,0 +1,7 @@
+{
+  "var_a_dir": "path/to/VariableA",
+  "var_b_dir": "path/to/VariableB",
+  "output_dir": "path/to/OutputDir",
+  "system_prompt": "path/to/system_prompt.txt",
+  "task_prompt": "path/to/task_prompt.txt"
+}
