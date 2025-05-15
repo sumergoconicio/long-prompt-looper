@@ -131,29 +131,26 @@ def get_context_files(var_a_dir: str, var_b_dir: str) -> Tuple[List[str], List[s
     """Get lists of context files from the input directories.
     
     Args:
-        var_a_dir: Path to Variable A directory
-        var_b_dir: Path to Variable B directory
-        
+        var_a_dir: Path to Variable A directory (must exist)
+        var_b_dir: Path to Variable B directory (must exist)
     Returns:
-        Tuple of (var_a_files, var_b_files)
-        
+        Tuple of (var_a_files, var_b_files). Each is a list of .txt/.md files (may be empty).
     Raises:
-        ValueError: If no valid files found in either directory
+        ValueError: If a directory is missing or unreadable.
+    Notes:
+        Never raises for empty file lists; always returns empty lists if no files found.
     """
     def get_txt_md_files(directory: str) -> List[str]:
-        return sorted([
-            os.path.join(directory, f) for f in os.listdir(directory)
-            if os.path.isfile(os.path.join(directory, f)) 
-            and f.lower().endswith(('.txt', '.md'))
-        ])
+        try:
+            return sorted([
+                os.path.join(directory, f) for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f)) 
+                and f.lower().endswith(('.txt', '.md'))
+            ])
+        except Exception as e:
+            raise ValueError(f"Error accessing directory {directory}: {str(e)}")
     
     var_a_files = get_txt_md_files(var_a_dir)
     var_b_files = get_txt_md_files(var_b_dir)
-    
-    if not var_a_files:
-        raise ValueError(f"No .txt or .md files found in Variable A directory: {var_a_dir}")
-    if not var_b_files:
-        raise ValueError(f"No .txt or .md files found in Variable B directory: {var_b_dir}")
-    
     print(f"\nFound {len(var_a_files)} Variable A files and {len(var_b_files)} Variable B files")
     return var_a_files, var_b_files

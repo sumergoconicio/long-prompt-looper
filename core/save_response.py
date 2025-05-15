@@ -46,7 +46,17 @@ def generate_output_filename(
     safe_var_a = sanitize(var_a_name)
     safe_var_b = sanitize(var_b_name)
     
-    filename = f"{safe_var_a}-{safe_var_b}-response.{extension}"
+    # Remove 'NONE' parts and create appropriate filename
+    parts = []
+    if safe_var_a != 'NONE':
+        parts.append(safe_var_a)
+    if safe_var_b != 'NONE':
+        parts.append(safe_var_b)
+    
+    if not parts:
+        filename = f"response.{extension}"
+    else:
+        filename = f"{'-'.join(parts)}-response.{extension}"
     return os.path.join(output_dir, filename)
 
 def save_response(

@@ -50,8 +50,8 @@ Key use cases:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/prompt-chaining-system.git
-   cd prompt-chaining-system
+   git clone https://github.com/sumergoconicio/long-prompt-looper.git
+   cd long-prompt-looper
    ```
 
 2. Create and activate a virtual environment (recommended):
@@ -74,7 +74,7 @@ Key use cases:
 ### Configuration
 
 1. **Environment Variables** (in `.env`):
-   - `OPENAI_API_KEY`: Your OpenAI API key (required for default LiteLLM adapter)
+   - `GEMINI_API_KEY`: Your Google Gemini API key (required for Gemini model usage)
    - `LOG_LEVEL`: Logging level (default: INFO)
 
 2. **File Structure**:

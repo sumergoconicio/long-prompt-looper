@@ -135,12 +135,14 @@ def main():
             inputs['var_a_dir'], 
             inputs['var_b_dir']
         )
-        
-        if not var_a_files or not var_b_files:
-            logger.warning("VariableA or VariableB folder is empty. Proceeding with only system prompt and task prompt.")
-            print("[WARNING] VariableA or VariableB folder is empty. Proceeding with only system prompt and task prompt.")
-            completed = 0
-            start_time = time.time()
+
+        completed = 0
+        start_time = time.time()
+
+        # Robust fallback logic
+        if not var_a_files and not var_b_files:
+            logger.warning("Both VariableA and VariableB folders are empty. Proceeding with only system prompt and task prompt.")
+            print("[WARNING] Both VariableA and VariableB folders are empty. Proceeding with only system prompt and task prompt.")
             output_path = process_combination(
                 system_prompt_path=inputs['system_prompt'],
                 task_prompt_path=inputs['task_prompt'],
@@ -157,41 +159,80 @@ def main():
             print(f"Time taken: {elapsed:.2f} seconds")
             print(f"Output directory: {inputs['output_dir']}")
             return
-        
-        total_combinations = len(var_a_files) * len(var_b_files)
-        print(f"\nWill process {total_combinations} combinations...")
-        
-        # Process all combinations
-        completed = 0
-        start_time = time.time()
-        
-        for var_a_path in var_a_files:
+        elif not var_a_files:
+            logger.warning("VariableA folder is empty. Proceeding with only VariableB files.")
+            print("[WARNING] VariableA folder is empty. Proceeding with only VariableB files.")
+            total_combinations = len(var_b_files)
             for var_b_path in var_b_files:
                 output_path = process_combination(
                     system_prompt_path=inputs['system_prompt'],
                     task_prompt_path=inputs['task_prompt'],
-                    var_a_path=var_a_path,
+                    var_a_path=None,
                     var_b_path=var_b_path,
                     output_dir=inputs['output_dir']
                 )
-                
                 if output_path:
                     completed += 1
                     print(f"Processed {completed}/{total_combinations}: {os.path.basename(output_path)}")
+            elapsed = time.time() - start_time
+            print(f"\n=== Processing Complete (Fallback Mode) ===")
+            print(f"Total combinations processed: {completed}/{total_combinations}")
+            print(f"Time taken: {elapsed:.2f} seconds")
+            print(f"Output directory: {inputs['output_dir']}")
+            return
+        elif not var_b_files:
+            logger.warning("VariableB folder is empty. Proceeding with only VariableA files.")
+            print("[WARNING] VariableB folder is empty. Proceeding with only VariableA files.")
+            total_combinations = len(var_a_files)
+            for var_a_path in var_a_files:
+                output_path = process_combination(
+                    system_prompt_path=inputs['system_prompt'],
+                    task_prompt_path=inputs['task_prompt'],
+                    var_a_path=var_a_path,
+                    var_b_path=None,
+                    output_dir=inputs['output_dir']
+                )
+                if output_path:
+                    completed += 1
+                    print(f"Processed {completed}/{total_combinations}: {os.path.basename(output_path)}")
+            elapsed = time.time() - start_time
+            print(f"\n=== Processing Complete (Fallback Mode) ===")
+            print(f"Total combinations processed: {completed}/{total_combinations}")
+            print(f"Time taken: {elapsed:.2f} seconds")
+            print(f"Output directory: {inputs['output_dir']}")
+            return
+        else:
+            total_combinations = len(var_a_files) * len(var_b_files)
+            print(f"\nWill process {total_combinations} combinations...")
+            for var_a_path in var_a_files:
+                for var_b_path in var_b_files:
+                    output_path = process_combination(
+                        system_prompt_path=inputs['system_prompt'],
+                        task_prompt_path=inputs['task_prompt'],
+                        var_a_path=var_a_path,
+                        var_b_path=var_b_path,
+                        output_dir=inputs['output_dir']
+                    )
+                    if output_path:
+                        completed += 1
+                        print(f"Processed {completed}/{total_combinations}: {os.path.basename(output_path)}")
+            elapsed = time.time() - start_time
+            print(f"\n=== Processing Complete ===")
+            print(f"Total combinations processed: {completed}/{total_combinations}")
+            print(f"Time taken: {elapsed:.2f} seconds")
+            print(f"Average time per combination: {elapsed/max(1, completed):.2f} seconds")
+            print(f"Output directory: {inputs['output_dir']}")
         
-        # Print summary
-        elapsed = time.time() - start_time
-        print(f"\n=== Processing Complete ===")
-        print(f"Total combinations processed: {completed}/{total_combinations}")
-        print(f"Time taken: {elapsed:.2f} seconds")
-        print(f"Average time per combination: {elapsed/max(1, completed):.2f} seconds")
-        print(f"Output directory: {inputs['output_dir']}")
-        
+    except ValueError as e:
+        logger.error(str(e))
+        print(f"[ERROR] {str(e)}")
+        sys.exit(1)
     except KeyboardInterrupt:
         print("\nProcess interrupted by user.")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"An error occurred: {str(e)}", exc_info=True)
+        logger.error(f"An unexpected error occurred: {str(e)}", exc_info=True)
+        print("[ERROR] An unexpected error occurred. See log for details.")
         sys.exit(1)
 
 if __name__ == "__main__":

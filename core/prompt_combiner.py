@@ -18,13 +18,13 @@ def read_file_content(file_path: str) -> str:
 
 def extract_filename(file_path: str) -> str:
     """Extract just the filename without extension from a path.
-    
     Args:
-        file_path: Full path to the file
-        
+        file_path: Full path to the file (can be None)
     Returns:
-        str: Filename without extension
+        str: Filename without extension, or 'NONE' if file_path is None
     """
+    if not file_path:
+        return "NONE"
     base = os.path.basename(file_path)
     return os.path.splitext(base)[0]
 
@@ -38,22 +38,23 @@ def combine_prompts(
     
     Args:
         system_prompt_path: Path to system prompt file
-        var_a_path: Path to Variable A context file
-        var_b_path: Path to Variable B context file
+        var_a_path: Path to Variable A context file (can be None)
+        var_b_path: Path to Variable B context file (can be None)
         task_prompt_path: Path to task prompt file
-        
     Returns:
         Tuple of (combined_prompt, var_a_name, var_b_name)
+    Notes:
+        If var_a_path or var_b_path is None, treats as empty context and uses 'NONE' as name.
     """
     # Read all components
     system_prompt = read_file_content(system_prompt_path)
-    var_a_content = read_file_content(var_a_path)
-    var_b_content = read_file_content(var_b_path)
+    var_a_content = read_file_content(var_a_path) if var_a_path else ""
+    var_b_content = read_file_content(var_b_path) if var_b_path else ""
     task_prompt = read_file_content(task_prompt_path)
     
     # Get clean names for output
-    var_a_name = extract_filename(var_a_path)
-    var_b_name = extract_filename(var_b_path)
+    var_a_name = extract_filename(var_a_path) if var_a_path else "NONE"
+    var_b_name = extract_filename(var_b_path) if var_b_path else "NONE"
     
     # Combine all components
     combined = (
