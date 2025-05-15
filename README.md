@@ -74,7 +74,7 @@ Key use cases:
 ### Configuration
 
 1. **Environment Variables** (in `.env`):
-   - `GEMINI_API_KEY`: Your Google Gemini API key (required for Gemini model usage)
+   - `OPENAI_API_KEY`: Your OpenAI API key (required for default LiteLLM adapter)
    - `LOG_LEVEL`: Logging level (default: INFO)
 
 2. **File Structure**:
