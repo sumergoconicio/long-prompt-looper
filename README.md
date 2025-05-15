@@ -93,8 +93,8 @@ Key use cases:
 ## Usage
 
 1. Prepare your input files:
-   - Place Variable A context files in `inputs/var_a/`
-   - Place Variable B context files in `inputs/var_b/`
+   - Place Variable A context files in `inputs/var_a/`. Folder can be empty, in which case the script will run in fallback mode!
+   - Place Variable B context files in `inputs/var_b/`. Folder can be empty, in which case the script will run in fallback mode!
    - Create `system_prompt.txt` and `task_prompt.txt` in `inputs/`
 
 2. Run the system:
